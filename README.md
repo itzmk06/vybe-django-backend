@@ -49,8 +49,3 @@ Built using **Django**, this backend handles **user authentication** and **email
 This project is developed for **educational** and **portfolio** purposes only.
 
 ---
-
-<p align="center"><b>💡 Built with Django and love 💙</b></p>
-```
-
----
