@@ -133,10 +133,10 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 
 # Email Host Email Address
-EMAIL_HOST_USER = 'itzmk06@gmail.com'
+EMAIL_HOST_USER = 'email id '
 
 # Email Host App Password
-EMAIL_HOST_PASSWORD = 'njnw dxhi ltnp nygo'
+EMAIL_HOST_PASSWORD = 'pass from google pass'
 EMAIL_USE_TLS = True
 
 # Default email address to use for various automated correspondence from the site managers.
