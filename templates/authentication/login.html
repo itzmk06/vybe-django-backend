@@ -1,0 +1,201 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vybe | Login </title>
+
+  <!-- TailwindCSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+  <!-- Tailwind Config -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            vybeBlue: '#009FFD',
+            vybePurple: '#7F00FF',
+            vybeBlack: '#0f0f0f',
+            vybeWhite: '#f9f9f9',
+            successGreen: '#28a745',
+            errorRed: '#dc3545'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #000;
+      overflow-x: hidden;
+      /* Removed font-family */
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="email"] {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      border-radius: 14px;
+      padding: 14px 18px;
+      width: 100%;
+      font-size: 1rem;
+      color: white;
+      transition: all 0.4s ease;
+      box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.1);
+    }
+
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+      letter-spacing: 0.5px;
+    }
+
+    input:focus {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid #009FFD;
+      outline: none;
+      box-shadow: 0 0 20px #009FFD66;
+      transform: scale(1.02);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+  </style>
+</head>
+
+<body class="text-white relative">
+
+<!-- Background -->
+<div class="absolute inset-0 z-0">
+  <img src="https://wallpaperaccess.com/full/1225634.jpg" alt="Background" class="w-full h-full object-cover brightness-75 scale-105">
+</div>
+
+<div class="absolute inset-0 bg-black bg-opacity-40 z-10"></div>
+
+<!-- Main Container -->
+<div class="relative z-20 flex items-center justify-center min-h-screen p-6">
+  <div class="w-full max-w-4xl flex flex-col md:flex-row items-center justify-center gap-8">
+
+    <!-- Left Section -->
+    <div class="flex flex-col items-start text-left space-y-6 p-8 w-full md:w-1/2" id="leftSection">
+      <img src="https://cdn-icons-png.flaticon.com/128/10091/10091411.png" class="w-16 h-16" id="logo" alt="Vybe Logo">
+      <h1 class="text-5xl md:text-6xl font-extrabold" id="bigTitle">You are in Vybe!</h1>
+      <p class="text-xl text-gray-300" id="subtitle">Stream your favorite movies seamlessly with magic.</p>
+    </div>
+
+    <!-- Right Section (Form) -->
+    <div class="bg-[#111111]/80 backdrop-blur-md p-8 rounded-3xl border border-white/10 w-full md:w-1/2 shadow-2xl" id="formContainer">
+      <h2 class="text-3xl font-bold mb-6 text-center" id="formHeading">Sign In</h2>
+
+      {% if messages %}
+      <div class="space-y-4 mb-6">
+        <ul class="text-sm text-red-400 space-y-2">
+          {% for message in messages %}
+          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+          {% endfor %}
+        </ul>
+        <div class="flex justify-center">
+          <a href="https://mail.google.com/" target="_blank" class="inline-block py-3 px-6 bg-vybeBlue text-white rounded-xl text-sm font-semibold hover:bg-vybePurple transition-all duration-300">
+            Go to Gmail
+          </a>
+        </div>
+      </div>
+      {% endif %}
+
+      <form method="post" class="space-y-6" id="formInputs">
+        {% csrf_token %}
+        {% for field in form %}
+          <div class="flex flex-col space-y-2 inputGroup">
+            <label for="{{ field.id_for_label }}" class="text-sm font-semibold text-gray-300">{{ field.label }}</label>
+            <input 
+              type="{{ field.field.widget.input_type }}" 
+              name="{{ field.html_name }}" 
+              id="{{ field.id_for_label }}" 
+              placeholder="{{ field.label }}"
+              autocomplete="off"
+              class="bg-white/5 backdrop-blur-lg border border-white/10 text-white rounded-2xl p-3 w-full focus:ring-2 focus:ring-vybeBlue focus:outline-none transition-all duration-300 placeholder-white/60"
+              {% if field.value %} value="{{ field.value }}" {% endif %}
+            >
+            {% if field.errors %}
+              <p class="text-red-400 text-xs mt-1">{{ field.errors|striptags }}</p>
+            {% endif %}
+          </div>
+        {% endfor %}
+
+        <button type="submit" class="w-full py-3 rounded-xl bg-vybeBlue hover:bg-vybePurple transition-transform duration-500 font-bold text-white" id="submitButton">
+          Log In
+        </button>
+
+        <div class="text-right text-xs text-gray-400 mt-2">
+          <a href="{% url 'password_reset' %}" class="hover:text-vybeBlue">Forgot Password?</a>
+        </div>
+      </form>
+
+      <div class="text-center text-sm text-gray-400 mt-6" id="signupLink">
+        Not registered? <a href="{% url 'register' %}" class="text-vybeBlue hover:underline">Sign Up</a>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- GSAP Animations -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    const master = gsap.timeline({ defaults: { ease: "expo.out", duration: 1.5 } });
+
+    master
+      .from("#logo", { scale: 0, opacity: 0, duration: 1.2, ease: "back.out(1.7)" })
+      .from("#bigTitle", { y: -80, opacity: 0 }, "-=1")
+      .from("#subtitle", { y: 40, opacity: 0 }, "-=0.8")
+      .from("#formContainer", { y: 50, opacity: 0, scale: 0.8 }, "-=1.2")
+      .from("#formHeading", { scale: 0.8, opacity: 0 }, "-=1")
+      .from(".inputGroup", {
+        opacity: 0,
+        y: 50,
+        stagger: 0.12,
+        duration: 1,
+        ease: "back.out(1.7)"
+      }, "-=0.8")
+      .from("#submitButton", { y: 30, opacity: 0, scale: 0.95, ease: "back.out(1.7)" }, "-=1")
+      .from("#signupLink", { opacity: 0, y: 20, ease: "power2.out" }, "-=1");
+
+    // Submit Button breathing effect
+    gsap.to("#submitButton", {
+      scale: 1.04,
+      repeat: -1,
+      duration: 2,
+      ease: "sine.inOut"
+    });
+
+    // Input hover micro animations (Cuberto feel)
+    document.querySelectorAll('input').forEach((input) => {
+      input.addEventListener('mouseenter', () => {
+        gsap.to(input, { scale: 1.03, duration: 0.4, ease: "power3.out" });
+      });
+      input.addEventListener('mouseleave', () => {
+        gsap.to(input, { scale: 1, duration: 0.4, ease: "power3.out" });
+      });
+      input.addEventListener('focus', () => {
+        gsap.to(input, { boxShadow: "0 0 25px #009FFD88", duration: 0.6, ease: "power2.out" });
+      });
+      input.addEventListener('blur', () => {
+        gsap.to(input, { boxShadow: "inset 0 0 8px rgba(255, 255, 255, 0.1)", duration: 0.6, ease: "power2.out" });
+      });
+    });
+  });
+</script>
+
+</body>
+</html>
